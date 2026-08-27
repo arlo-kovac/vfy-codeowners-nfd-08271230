@@ -1,3 +1,4 @@
+/.github/CODEOWNERS @arlo-kovac
 # maintainers: every change under these paths needs the security owner's review
 /docs/ @arlo-kovac
 /sécurité/ @arlo-kovac
