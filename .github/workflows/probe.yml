@@ -1,0 +1,20 @@
+name: normalization-checkout-probe
+on: push
+jobs:
+  origin:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo "===== DOES macOS GIT PRECOMPOSE NFD -> NFC ON ADD? ====="
+          git config --get core.precomposeunicode || echo "(core.precomposeunicode UNSET)"
+          echo "--- create a directory whose name we type as NFD, then git add it ---"
+          python3 -c "import unicodedata,os; os.makedirs(unicodedata.normalize('NFD','wörk'),exist_ok=True); open(unicodedata.normalize('NFD','wörk')+'/f.txt','w').write('x')"
+          echo "on-disk name bytes:"; ls | grep -a work -i | head -3 | xxd | head -2
+          git add -A && git -c core.precomposeunicode=true diff --cached --name-only | cat -v
+          echo "--- what git STORED (index), as escaped bytes ---"
+          git diff --cached --name-only -z | tr '\0' '\n' | while read -r p; do printf '%s -> ' "$p"; printf '%s' "$p" | xxd -p; done
+          echo "--- same with precompose explicitly OFF ---"
+          git reset -q
+          git -c core.precomposeunicode=false add -A
+          git -c core.precomposeunicode=false diff --cached --name-only -z | tr '\0' '\n' | while read -r p; do printf '%s -> ' "$p"; printf '%s' "$p" | xxd -p; done
