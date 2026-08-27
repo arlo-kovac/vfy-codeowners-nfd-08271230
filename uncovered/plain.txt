@@ -1,0 +1,1 @@
+ascii, deliberately covered by NO codeowners pattern
