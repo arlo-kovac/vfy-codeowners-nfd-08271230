@@ -1,1 +1,1 @@
-REVIEWED production content, committed NFD
+attacker edit of the protected NFD file
